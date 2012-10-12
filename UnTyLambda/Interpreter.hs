@@ -73,7 +73,7 @@ makeReductsa :: Term -> Term
 makeReductsa (Var v) = (Var v)
 makeReductsa (Lam v b) = Lam v (makeReductsa b)
 makeReductsa (App v1 v2) = if (hasReduct v2) then  (App v1 (makeReductsa v2)) else tmp
-	where tmp = if (hasReduct v1) then (App (makeReductsa v2) v1) else (beta (App v1 v2))
+	where tmp = if (hasReduct v1) then (App (makeReductsa v1) v2) else (beta (App v1 v2))
 
 
 
