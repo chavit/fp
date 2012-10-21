@@ -1,4 +1,4 @@
---{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 module ITMOPrelude.Primitive where
 
 import Prelude (Show,Read,error)
@@ -222,6 +222,8 @@ data Rat = Rat Int Nat deriving (Show, Read)
 ratNeg :: Rat -> Rat
 ratNeg (Rat x y) = Rat (intNeg x) y
 
+ratZero = Rat intZero natOne
+ratOne = Rat intOne natOne
 
 -- У рациональных ещё есть обратные элементы
 ratInv :: Rat -> Rat
