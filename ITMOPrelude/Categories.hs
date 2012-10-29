@@ -1,21 +1,33 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 module ITMOPrelude.Categories where
 
+-- Реализовать для всего,
+-- что только можно из
 import ITMOPrelude.Primitive
 import ITMOPrelude.List
 import ITMOPrelude.Tree
-import ITMOPrelude.Algebra
+-- всевозможные инстансы для классов ниже
 
+--------------------------------------------------------------------------------
+-- Классы
 class Category cat where
-	id :: cat a a
-	(%.) :: cat b c -> cat a b -> cat a c
-	
+    id  :: cat a a
+    (.) :: cat b c -> cat a b -> cat a c
+
+class Functor f where
+    fmap :: (a -> b) -> f a -> f b
+
+class Monad m where
+    return :: a -> m a
+    (>>=) :: m a -> (a -> m b) -> m b
+
+(>>) :: Monad m => m a -> m b -> m b
+ma >> mb = ma >>= (\_ -> mb)
+
 instance Category (->) where 
     id = \x -> x
-    (%.)  = (.)
+    f . g  = \x -> f (g x)  
 
-class Functor m where 
-	fmap :: (a -> b) -> m a -> m b
 
 instance Functor Maybe  where 
 	fmap f Nothing = Nothing
@@ -31,9 +43,6 @@ instance Functor List where
 instance Functor Tree where
 	fmap = mapTree
 
-class Functor m => Monad m where 
-	return :: a -> m a
-	(>>=) :: m a -> (a -> m b) -> m b
 
 instance Monad List where 
     return a = Cons a Nil
@@ -50,14 +59,14 @@ instance Monad (Either a) where
     (Left a) >>= f = Left a
     (Right b) >>= f = f b
 
-class (Monad m) => (MonadFish m) where
-	(>=>) :: (a -> m b )-> (b -> m c) -> (a -> m c)
-	f >=> g = \c -> (return c) >>= f >>= g  
+--class (Monad m) => (MonadFish m) where
+--	(>=>) :: (a -> m b )-> (b -> m c) -> (a -> m c)
+--	f >=> g = \c -> (return c) >>= f >>= g  
+--
+--class (MonadFish m) => (MonadJoin m) where 
+--	join :: m (m a) -> m a
+--	join = (\x -> x) >=> (\x -> x)
 
-class (MonadFish m) => (MonadJoin m) where 
-	join :: m (m a) -> m a
-	join = (\x -> x) >=> (\x -> x)
-
-class (MonadJoin m) => (MonadBind m) where
-    bind ::  m a -> (a -> m b) -> m b	
-    bind = (\x f -> join (fmap f x))
+--class (MonadJoin m) => (MonadBind m) where
+--    bind ::  m a -> (a -> m b) -> m b	
+--    bind = (\x f -> join (fmap f x))

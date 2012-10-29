@@ -1,12 +1,22 @@
 {-# LANGUAGE NoImplicitPrelude,FlexibleInstances #-}
-module ITMOPrelude.Algebra where
+module ITMOPredule.Algebra where
 
+-- Реализовать для всего,
+-- что только можно из
 import ITMOPrelude.Primitive
-import ITMOPrelude.List
+-- всевозможные инстансы для классов ниже 
 
+-- Если не страшно, то реализуйте их и для
+import ITMOPrelude.List
+import ITMOPrelude.Tree
+
+-- Классы
 class Monoid a where
-   mempty :: a
-   mappend :: a -> a -> a
+    mempty :: a
+    mappend :: a -> a -> a
+
+class Monoid a => Group a where
+    ginv :: a -> a
 
 instance Monoid Unit where
    mempty = Unit
@@ -64,15 +74,18 @@ instance Monoid (Product Rat) where
 instance Monoid (List a) where
    mempty = Nil
    mappend = (++)
+
+instance Monoid(Tree a) where
+   mempty = Null
+   mappend Null b = b
+   mappend (Build a b c) d = Build a b (mappend c d) 	
    
-class (Monoid a) => (Group a) where
-   inv :: a -> a 
 
 instance Group Unit where
-   inv x = Unit 
+   ginv x = Unit 
 
 instance Group (Sum Int) where
-   inv x = Sum $ intNeg (getSum x)
+   ginv x = Sum $ intNeg (getSum x)
 
 instance Group (Sum Rat) where
-   inv x = Sum $ ratNeg (getSum x)
+   ginv x = Sum $ ratNeg (getSum x)
