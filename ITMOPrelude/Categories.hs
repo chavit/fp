@@ -59,6 +59,14 @@ instance Monad (Either a) where
     (Left a) >>= f = Left a
     (Right b) >>= f = f b
 
+newtype State s a = State { runState :: s -> (s, a) }
+
+instance Monad (State s) where
+    return a = State $ \s -> (s, a)
+    m >>= f = State $ \s -> 
+        let (s', a) = runState m s 
+        in runState (f a) s'
+
 --class (Monad m) => (MonadFish m) where
 --	(>=>) :: (a -> m b )-> (b -> m c) -> (a -> m c)
 --	f >=> g = \c -> (return c) >>= f >>= g  
@@ -70,3 +78,4 @@ instance Monad (Either a) where
 --class (MonadJoin m) => (MonadBind m) where
 --    bind ::  m a -> (a -> m b) -> m b	
 --    bind = (\x f -> join (fmap f x))
+
